@@ -18,6 +18,7 @@ echo \
     sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo usermod -aG docker $USER
 #######################Systemd
 sudo tee /etc/containerd/config.toml >/dev/null <<'EOF'
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]

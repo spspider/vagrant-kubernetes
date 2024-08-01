@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
         node.vm.provision "shell", inline: <<-SHELL
           apt-get update -y
           apt-get install -y net-tools
-          echo "#{each_machine[:ip_private]}  #{each_machine[:name]}-node" >> /etc/hosts
+          echo "#{each_machine[:ip]}  #{each_machine[:name]}" >> /etc/hosts
         SHELL
         node.vm.boot_timeout = 360
         node.ssh.username = "vagrant"
