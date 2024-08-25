@@ -13,9 +13,9 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
 echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
-    sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+  sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 sudo usermod -aG docker $USER
@@ -41,11 +41,17 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 
-sudo kubeadm init --apiserver-advertise-address 192.168.1.160 --pod-network-cidr 10.244.0.0/16
+sudo kubeadm init --apiserver-advertise-address 192.168.1.160 --pod-network-cidr 10.0.0.0/16
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+KUBECONFIG=$HOME/.kube/config
 
-kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.29/net.yaml
-# kubeadm join 192.168.1.160:6443 --token qa52p0.uwacl9f1wx6c2lua \
-#         --discovery-token-ca-cert-hash sha256:06dc6a5ea9ad66357936eb8b15c56b669ebf70c0242b28861b0fd31099dd9418
+# sudo kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.29/net.yaml
+wget https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+kubectl apply -f weave-daemonset-k8s.yaml
+# kubeadm join 192.168.1.160:6443 --token 4jnpwq.69j9amhrv6845bs4 \
+#         --discovery-token-ca-cert-hash sha256:cb36248b27e99bb77fef652bdeea52de23103a8641990af1fbc3c8c8fa25feb2
 
 # sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
 # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
